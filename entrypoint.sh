@@ -54,7 +54,7 @@ if ! flyctl status --app "$app"; then
   flyctl launch --no-deploy --copy-config --name "$app" --dockerfile "$dockerfile" --regions "$region" --org "$org"
 
   # Attach postgres cluster and set the DATABASE_URL
-  flyctl postgres attach "$postgres_app" --app "$app"
+  flyctl postgres attach "$postgres_app" --app "$app" --yes
   flyctl deploy $detach --app "$app" --regions "$region" --strategy immediate --remote-only
 
   statusmessage="Review app created. It may take a few minutes for the app to deploy."
