@@ -27,6 +27,9 @@ region="${INPUT_REGION:-${FLY_REGION:-ord}}"
 org="${INPUT_ORG:-${FLY_ORG:-personal}}"
 dockerfile="$INPUT_DOCKERFILE"
 
+# Replace placeholder in fly.toml with actual app name
+sed -i "s/APP_NAME_PLACEHOLDER/$app/g" ./fly.toml
+
 # only wait for the deploy to complete if the user has requested the wait option
 # otherwise detach so the GitHub action doesn't run as long
 if [ "$INPUT_WAIT" = "true" ]; then
@@ -57,13 +60,13 @@ if ! flyctl status --app "$app"; then
   flyctl postgres attach "$postgres_app" --app "$app" --yes --database-user "$app"-user
   flyctl secrets set -a "$app" PORT=8080
   flyctl secrets set -a "$app" RAILS_MASTER_KEY="$RAILS_MASTER_KEY"
-  flyctl deploy $detach --app "$app" --regions "$region" --strategy immediate --remote-only
+  flyctl deploy $detach --app "$app" --regions "$region" --strategy immediate --remote-only --config ./fly.toml
 
   statusmessage="Review app created. It may take a few minutes for the app to deploy."
 elif [ "$EVENT_TYPE" = "synchronize" ]; then
   flyctl secrets set -a "$app" PORT=8080
   flyctl secrets set -a "$app" RAILS_MASTER_KEY="$RAILS_MASTER_KEY"
-  flyctl deploy $detach --app "$app" --regions "$region" --strategy immediate --remote-only
+  flyctl deploy $detach --app "$app" --regions "$region" --strategy immediate --remote-only --config ./fly.toml
   statusmessage="Review app updated. It may take a few minutes for your changes to be deployed."
 fi
 
