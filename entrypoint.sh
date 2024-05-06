@@ -60,6 +60,7 @@ if ! flyctl status --app "$app"; then
 
   statusmessage="Review app created. It may take a few minutes for the app to deploy."
 elif [ "$EVENT_TYPE" = "synchronize" ]; then
+  flyctl secrets set -a "$app" RAILS_MASTER_KEY="$RAILS_MASTER_KEY"
   flyctl deploy $detach --app "$app" --regions "$region" --strategy immediate --remote-only
   statusmessage="Review app updated. It may take a few minutes for your changes to be deployed."
 fi
