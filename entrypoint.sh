@@ -54,7 +54,7 @@ fi
 
 # Deploy the Fly app, creating it first if needed.
 if ! flyctl status --app "$app"; then
-  flyctl launch --no-deploy --name "$app" --dockerfile "$dockerfile" --regions "$region" --org "$org"
+  flyctl launch --no-deploy --import ./fly.toml --name "$app" --dockerfile "$dockerfile" --regions "$region" --org "$org"
 
   # Attach postgres cluster and set the DATABASE_URL
   flyctl postgres attach "$postgres_app" --app "$app" --yes --database-user "$app"-user
