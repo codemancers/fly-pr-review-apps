@@ -26,6 +26,7 @@ postgres_app="${INPUT_POSTGRES:-$REPO_NAME-pr-$PR_NUMBER-postgres}"
 region="${INPUT_REGION:-${FLY_REGION:-ord}}"
 org="${INPUT_ORG:-${FLY_ORG:-personal}}"
 dockerfile="$INPUT_DOCKERFILE"
+config="${INPUT_CONFIG:-./fly.toml}"
 
 # Replace placeholder in fly.toml with actual app name
 sed -i "s/APP_NAME_PLACEHOLDER/$app/g" ./fly.toml
@@ -54,8 +55,10 @@ fi
 
 # Deploy the Fly app, creating it first if needed.
 if ! flyctl status --app "$app"; then
-  flyctl launch --no-deploy --copy-config --name "$app" --dockerfile "$dockerfile" --regions "$region" --org "$org"
+  cp "$config" "$config.bak"
 
+  flyctl launch --no-deploy --copy-config --name "$app" --dockerfile "$dockerfile" --regions "$region" --org "$org" --internal-port 8080 --vm-size 'shared-cpu-2x'
+  cp "$config.bak" "$config"
   # Attach postgres cluster and set the DATABASE_URL
   flyctl postgres attach "$postgres_app" --app "$app" --yes --database-user "$app"-user
   flyctl secrets set -a "$app" PORT=8080
