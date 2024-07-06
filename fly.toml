@@ -41,3 +41,7 @@ console_command = '/rails/bin/rails console'
 [[statics]]
   guest_path = '/rails/public'
   url_prefix = '/'
+
+[env]
+RUBY_YJIT_ENABLE = "1"
+MALLOC_ARENA_MAX = "2"
